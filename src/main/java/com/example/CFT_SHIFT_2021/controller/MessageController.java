@@ -35,7 +35,7 @@ public class MessageController {
     @GetMapping("/messages") // взять
     public ResponseEntity getMessages(){
         try {
-            return ResponseEntity.ok(messageCRUD.findAll());
+            return ResponseEntity.ok(messageService.getAllMessage());
         }catch (Exception e){
             return  ResponseEntity.badRequest().body("code: MESSAGE_NOT_FOUND");
         }

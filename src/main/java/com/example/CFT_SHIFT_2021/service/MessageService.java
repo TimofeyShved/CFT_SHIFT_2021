@@ -5,14 +5,17 @@ import com.example.CFT_SHIFT_2021.entity.UserEntity;
 import com.example.CFT_SHIFT_2021.exception.MessageNotFoundException;
 import com.example.CFT_SHIFT_2021.exception.UserExistsException;
 import com.example.CFT_SHIFT_2021.exception.UserNotFoundException;
+import com.example.CFT_SHIFT_2021.model.MessageModel;
 import com.example.CFT_SHIFT_2021.repository.MessageCRUD;
 import com.example.CFT_SHIFT_2021.repository.UserCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -34,5 +37,13 @@ public class MessageService {
         Calendar cal = Calendar.getInstance();
         message.setSendTime(dateFormat.format(cal.getTime()));
         return messageCRUD.save(message);
+    }
+
+    public ArrayList<MessageModel> getAllMessage() throws Exception{
+        ArrayList<MessageModel> arrayListMessage = new ArrayList<>();
+        for(MessageEntity m:messageCRUD.findAll()){
+            arrayListMessage.add(MessageModel.toMpdel(m));
+        }
+        return arrayListMessage;
     }
 }
