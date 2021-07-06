@@ -1,5 +1,8 @@
 package com.example.CFT_SHIFT_2021.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.CreatedDate;
+
 import javax.persistence.*;
 import java.sql.Date;
 
@@ -12,7 +15,10 @@ public class MessageEntity {// ----------------------------------------------- Ð
     private long messageId;
     private String text;
     private long lifetimeSec, delaySec;
-    private Date sendTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @Column(name = "sendTime")
+    private String sendTime;
     private boolean unRead;
 
     @JoinColumn(name = "userId")
@@ -56,14 +62,6 @@ public class MessageEntity {// ----------------------------------------------- Ð
         this.delaySec = delaySec;
     }
 
-    public Date getSendTime() {
-        return sendTime;
-    }
-
-    public void setSendTime(Date sendTime) {
-        this.sendTime = sendTime;
-    }
-
     public boolean isUnRead() {
         return unRead;
     }
@@ -78,5 +76,13 @@ public class MessageEntity {// ----------------------------------------------- Ð
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
     }
 }

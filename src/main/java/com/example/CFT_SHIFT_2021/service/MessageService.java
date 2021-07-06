@@ -10,6 +10,12 @@ import com.example.CFT_SHIFT_2021.repository.UserCRUD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+
 @Service
 public class MessageService {
 
@@ -24,6 +30,9 @@ public class MessageService {
         if (user==null){
             throw new UserNotFoundException("code: USER_NOT_FOUND");
         }
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        message.setSendTime(dateFormat.format(cal.getTime()));
         return messageCRUD.save(message);
     }
 }
