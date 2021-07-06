@@ -64,7 +64,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user/{userId}") // удалить
+    @PutMapping("/user/{userId}") // обновить
     public ResponseEntity updateOne(@PathVariable Long userId, @RequestBody UserEntity user) throws Exception {
         try {
             return ResponseEntity.ok(userService.updateOne(userId, user));
