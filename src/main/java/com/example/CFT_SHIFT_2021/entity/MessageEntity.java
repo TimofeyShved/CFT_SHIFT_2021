@@ -24,6 +24,9 @@ public class MessageEntity {// ----------------------------------------------- �
     @JoinColumn(name = "userId")
     private Long userId;
 
+    @JoinColumn(name = "chatId")
+    private Long chatId;
+
     public MessageEntity(){ // конструктор
     }
 
@@ -84,5 +87,13 @@ public class MessageEntity {// ----------------------------------------------- �
 
     public void setSendTime(String sendTime) {
         this.sendTime = sendTime;
+    }
+
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
     }
 }

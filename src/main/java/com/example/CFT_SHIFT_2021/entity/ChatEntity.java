@@ -1,9 +1,7 @@
 package com.example.CFT_SHIFT_2021.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class ChatEntity {// ----------------------------------------------- наше с вами сообщение
@@ -13,6 +11,12 @@ public class ChatEntity {// ----------------------------------------------- на
     @GeneratedValue(strategy = GenerationType.IDENTITY) // автогенерация значений ключа
     private long chatId;
     private String name;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "chatId")
+    private List<MessageEntity> message;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "chatId")
+    private List<MessageEntity> participants;
 
     public ChatEntity(){ // конструктор
     }

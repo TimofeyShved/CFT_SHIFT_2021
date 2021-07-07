@@ -15,6 +15,9 @@ public class UserEntity { // ----------------------------------------------- н�
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private List<MessageEntity> message;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private List<MessageEntity> participants;
+
     public UserEntity(){ // конструктор
     }
 
