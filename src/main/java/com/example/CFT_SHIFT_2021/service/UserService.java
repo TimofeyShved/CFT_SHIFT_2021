@@ -1,6 +1,7 @@
 package com.example.CFT_SHIFT_2021.service;
 
 import com.example.CFT_SHIFT_2021.entity.UserEntity;
+import com.example.CFT_SHIFT_2021.exception.ChatExistsException;
 import com.example.CFT_SHIFT_2021.exception.UserExistsException;
 import com.example.CFT_SHIFT_2021.exception.UserNotFoundException;
 import com.example.CFT_SHIFT_2021.repository.UserCRUD;
@@ -16,9 +17,9 @@ public class UserService {
     @Autowired
     private UserCRUD userCRUD; // создаём интерфейс для взаимодействия с бд
 
-    public UserEntity registration(UserEntity user) throws UserExistsException {
+    public UserEntity registration(UserEntity user) throws ChatExistsException {
         if ((userCRUD.findUserEntityByFirstName(user.getFirstName())!=null)&&(userCRUD.findUserEntityBylastName(user.getLastName())!=null)){
-            throw new UserExistsException("code: USER_EXISTS");
+            throw new ChatExistsException("code: CHAT_EXISTS");
         }
         return userCRUD.save(user);
     }

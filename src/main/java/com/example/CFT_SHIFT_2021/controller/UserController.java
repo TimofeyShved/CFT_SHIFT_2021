@@ -22,14 +22,12 @@ public class UserController {
     private UserCRUD userCRUD; // создаём интерфейс для взаимодействия с бд
 
     @PostMapping("/user") // создать
-    public ResponseEntity registration(@RequestBody UserEntity user) throws Exception {
+    public ResponseEntity registration(@RequestBody UserEntity user) throws UserExistsException, Exception {
         try {
             userService.registration(user);
             return ResponseEntity.ok(user);
-        }catch (UserExistsException e){
-            return  ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e){
-            return  ResponseEntity.badRequest().body("code: ERROR");
+        } catch (Exception e){
+            return  ResponseEntity.badRequest().body("code: USER_EXISTS");
         }
     }
 

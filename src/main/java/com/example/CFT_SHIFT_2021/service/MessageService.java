@@ -8,6 +8,7 @@ import com.example.CFT_SHIFT_2021.exception.UserNotFoundException;
 import com.example.CFT_SHIFT_2021.model.MessageModel;
 import com.example.CFT_SHIFT_2021.repository.MessageCRUD;
 import com.example.CFT_SHIFT_2021.repository.UserCRUD;
+import com.example.CFT_SHIFT_2021.sorting.SortMessageTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,6 @@ public class MessageService {
         for(MessageEntity m:messageCRUD.findAll()){
             arrayListMessage.add(MessageModel.toMpdel(m));
         }
-        return arrayListMessage;
+        return SortMessageTime.sort(arrayListMessage);
     }
 }
