@@ -32,12 +32,23 @@ public class MessageController {
         }
     }
 
-    @GetMapping("/messages") // взять
-    public ResponseEntity getMessages(){
+    //@GetMapping("/messages") // взять
+    @RequestMapping(value = "/messages",method = RequestMethod.GET, params = {"chatId"})
+    public ResponseEntity getMessages(@RequestParam Long chatId){
         try {
-            return ResponseEntity.ok(messageService.getAllMessage());
+            return ResponseEntity.ok(messageService.getAllMessage(chatId));
         }catch (Exception e){
             return  ResponseEntity.badRequest().body("code: MESSAGE_NOT_FOUND");
         }
     }
+
+    @RequestMapping(value = "/messages",method = RequestMethod.GET)
+    public ResponseEntity getMessages(){
+        try {
+            return ResponseEntity.ok(messageService.getAllMessage(null));
+        }catch (Exception e){
+            return  ResponseEntity.badRequest().body("code: MESSAGE_NOT_FOUND");
+        }
+    }
+
 }

@@ -33,6 +33,9 @@ public class MessageService {
     @Autowired
     private ParticipantsService participantsService;
 
+    @Autowired
+    private MessageService messageService;
+
     public MessageEntity registration(MessageEntity message) throws Exception { // добавить сообщение в бд
         // находим человека по Id
         UserEntity user = userCRUD.findById(message.getUserId()).get();
@@ -60,12 +63,13 @@ public class MessageService {
         return messageCRUD.save(message); // сохранить
     }
 
-    public ArrayList<MessageModel> getAllMessage() throws Exception{  // получить список всех сообщений из бд, которые для всех
+    public ArrayList<MessageModel> getAllMessage(Long chatId) throws Exception{  // получить список всех сообщений из бд, которые для всех
         ArrayList<MessageModel> arrayListMessage = new ArrayList<>();
         for(MessageEntity m:messageCRUD.findAll()){
-            if (m.getChatId()==null)
+            if (m.getChatId()==chatId)
                 arrayListMessage.add(MessageModel.toMpdel(m));
         }
         return SortMessageTime.sort(arrayListMessage);
     }
+
 }
