@@ -14,6 +14,9 @@ public class ChatEntity {// ----------------------------------------------- на
     private long chatId;
     private String name;
 
+    public ChatEntity(){ // конструктор
+    }
+
     // ----------------------------------------------- гетеры и сетеры
     public long getChatId() {
         return chatId;
