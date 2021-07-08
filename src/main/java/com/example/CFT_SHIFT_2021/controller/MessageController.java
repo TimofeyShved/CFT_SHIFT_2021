@@ -3,6 +3,7 @@ package com.example.CFT_SHIFT_2021.controller;
 import com.example.CFT_SHIFT_2021.entity.MessageEntity;
 import com.example.CFT_SHIFT_2021.entity.UserEntity;
 import com.example.CFT_SHIFT_2021.exception.UserExistsException;
+import com.example.CFT_SHIFT_2021.exception.UserNotFoundException;
 import com.example.CFT_SHIFT_2021.repository.MessageCRUD;
 import com.example.CFT_SHIFT_2021.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,17 @@ public class MessageController {
             return ResponseEntity.ok(messageService.getAllMessage(null));
         }catch (Exception e){
             return  ResponseEntity.badRequest().body("code: MESSAGE_NOT_FOUND");
+        }
+    }
+
+    @RequestMapping(value = "/messages",method = RequestMethod.DELETE, params = {"messageId"})
+    public ResponseEntity deleteOne(@PathVariable Long messageId) throws Exception {
+        try {
+            return ResponseEntity.ok(messageService.deleteOneMessage(messageId));
+        }catch (UserNotFoundException e){
+            return  ResponseEntity.badRequest().body(e.getMessage());
+        }catch (Exception e){
+            return  ResponseEntity.badRequest().body("code: ERROR");
         }
     }
 
