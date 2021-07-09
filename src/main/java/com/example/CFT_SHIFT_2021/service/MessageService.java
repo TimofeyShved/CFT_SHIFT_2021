@@ -21,10 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.annotation.*;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -36,13 +33,17 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 
 @Service
+@EnableScheduling
 public class MessageService {
+
+    private ArrayList<MessageEntity> arrayListMessage;
 
     @Autowired
     private MessageCRUD messageCRUD; // создаём интерфейс для взаимодействия с бд
@@ -82,25 +83,49 @@ public class MessageService {
         }
 
         if(message.getLifetimeSec()>0){ // время жизни есть?
-            Long timel = message.getLifetimeSec()+message.getDelaySec(); // вытащить из сообщения
-            Long timed = message.getDelaySec();
-            //MessageEntity messageTime = message;
-            //ApplicationContext ctx = new AnnotationConfigApplicationContext(TimeLifeMessageThreadAppConfig.class); // конфигурация потока
-            //timeLife = (TimeLifeMessageThread) ctx.getBean("timeThread"); // обёртка
-            //timeLife.set(timel, timed, message); //
-            //timeLife.start();
-            //new DynamicSchedulingConfig(timeLife, timeDelay, message, messageCRUD);
-            //scheduleFixedDelayTask(timeLife, timeDelay, message);
-            //System.out.println("//////////////////////////");
-            Time time = new Time();
-            time.set(timel, timed, message);
-            time.start();
+            //Long timel = message.getLifetimeSec()+message.getDelaySec(); // вытащить из сообщения
+            //Long timed = message.getDelaySec();
+            timeLife.set(message); //Передали сообщение потоку
+            System.out.println(11111);
             return message;
         }
         else {
             return messageCRUD.save(message); // сохранить
         }
     }
+
+    @Scheduled(fixedRate = 1000)
+    public void run() {
+        if (arrayListMessage!=null) {
+            ArrayList<MessageEntity> newArrayListMessage = new ArrayList<>();
+            for(MessageEntity m:arrayListMessage){
+
+                if(m.getDelaySec()>=0){
+                    m.setDelaySec(m.getDelaySec()-1);
+
+                    if (m.getDelaySec()==-1){
+                        m.setMessageId((messageCRUD.save(m)).getMessageId());
+                    }
+                }
+                else {
+                    if(m.getLifetimeSec()>0){
+                        m.setDelaySec(m.getLifetimeSec()-1);
+
+                        if (m.getDelaySec()==0){
+                            messageCRUD.deleteById(m.getMessageId());
+                        }
+                    }else {
+                        m=null;
+                    }
+                }
+                if (m!=null) {
+                    newArrayListMessage.add(m);
+                }
+            }
+            arrayListMessage = newArrayListMessage;
+        }
+    }
+
 
     // ---------------------------------------------------------------------------- получить список всех сообщений из бд, которые для всех
     public ArrayList<MessageModel> getAllMessage(Long chatId) throws Exception{
@@ -123,8 +148,11 @@ public class MessageService {
 
 }
 
+/*
 @Component
-class Time{
+@EnableScheduling
+@EnableAsync
+class myTimeMessage{
     private Long timeLife=0L;
     private Long timeDelay=0L;
     private MessageEntity message=null;
@@ -132,7 +160,7 @@ class Time{
     @Autowired
     private MessageCRUD messageCRUD; // создаём интерфейс для взаимодействия с бд
 
-    public Time() {
+    public myTimeMessage() {
     }
 
     public void set(Long timeLife, Long timeDelay, MessageEntity message) {
@@ -142,6 +170,7 @@ class Time{
     }
 
     @Async
+    @Scheduled(initialDelay = 1000L)
     public void start() {
         try {
             Thread.yield(); // даем возможность выбрать другой поток
@@ -157,3 +186,5 @@ class Time{
     }
 
 }
+
+ */

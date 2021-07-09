@@ -38,7 +38,7 @@ public class ParticipantsService {
     }
 
     public Long ParticipantsCoincidence (ParticipantsEntity participantsEntity){
-        ArrayList<ParticipantsEntity> arrayListParticipants= new ArrayList<>();
+        ArrayList<ParticipantsEntity> arrayListParticipants = new ArrayList<>();
         for(ParticipantsEntity p:participantsCRUD.findAll()){
             arrayListParticipants.add(p);
         }
