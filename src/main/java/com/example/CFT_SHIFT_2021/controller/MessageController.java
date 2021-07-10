@@ -32,7 +32,7 @@ public class MessageController {
     public ResponseEntity registration(@RequestBody MessageEntity message) throws Exception {
         try {
             MessageEntity NewMessage = messageService.registration(message);
-            unReadService.registration(NewMessage);
+            if(NewMessage.getMessageId()!=0){unReadService.registration(NewMessage);}
             return ResponseEntity.ok(NewMessage);
         }catch (Exception e){
             return  ResponseEntity.badRequest().body("code: USER_NOT_FOUND_ERROR_MESSAGE");
