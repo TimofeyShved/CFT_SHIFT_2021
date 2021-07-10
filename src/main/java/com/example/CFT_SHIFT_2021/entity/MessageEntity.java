@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 public class MessageEntity {// ----------------------------------------------- наше с вами сообщение
@@ -19,13 +20,15 @@ public class MessageEntity {// ----------------------------------------------- �
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
     @Column(name = "sendTime")
     private String sendTime;
-    private boolean unRead;
 
     @JoinColumn(name = "userId")
     private Long userId;
 
     @JoinColumn(name = "chatId")
     private Long chatId;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "messageId")
+    private List<UnReadEntity> unread;
 
     public MessageEntity(){ // конструктор
     }
@@ -63,14 +66,6 @@ public class MessageEntity {// ----------------------------------------------- �
 
     public void setDelaySec(long delaySec) {
         this.delaySec = delaySec;
-    }
-
-    public boolean isUnRead() {
-        return unRead;
-    }
-
-    public void setUnRead(boolean unRead) {
-        this.unRead = unRead;
     }
 
     public Long getUserId() {

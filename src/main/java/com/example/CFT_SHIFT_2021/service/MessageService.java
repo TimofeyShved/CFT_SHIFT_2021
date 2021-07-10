@@ -3,12 +3,15 @@ package com.example.CFT_SHIFT_2021.service;
 import com.example.CFT_SHIFT_2021.config.TimeLifeMessageThreadAppConfig;
 import com.example.CFT_SHIFT_2021.entity.MessageEntity;
 import com.example.CFT_SHIFT_2021.entity.ParticipantsEntity;
+import com.example.CFT_SHIFT_2021.entity.UnReadEntity;
 import com.example.CFT_SHIFT_2021.entity.UserEntity;
 import com.example.CFT_SHIFT_2021.exception.MessageNotFoundException;
 import com.example.CFT_SHIFT_2021.exception.UserExistsException;
 import com.example.CFT_SHIFT_2021.exception.UserNotFoundException;
 import com.example.CFT_SHIFT_2021.model.MessageModel;
 import com.example.CFT_SHIFT_2021.repository.MessageCRUD;
+import com.example.CFT_SHIFT_2021.repository.ParticipantsCRUD;
+import com.example.CFT_SHIFT_2021.repository.UnReadCRUD;
 import com.example.CFT_SHIFT_2021.repository.UserCRUD;
 import com.example.CFT_SHIFT_2021.sorting.SortMessageTime;
 import com.example.CFT_SHIFT_2021.thread.TimeLifeMessageThread;
@@ -57,7 +60,13 @@ public class MessageService {
     @Autowired
     private TimeLifeMessageThread timeLife;
 
-    // ---------------------------------------------------------------------------------------------------- добавить сообщение в бд
+    @Autowired
+    private UnReadCRUD unReadCRUD;
+
+    @Autowired
+    private ParticipantsCRUD participantsCRUD;
+
+    // ---------------------------------------------------------------------------------------------------- добавить сообщение в бд ------------------------------------------------
     public MessageEntity registration(MessageEntity message) throws Exception {
         // находим человека по Id
         UserEntity user = userCRUD.findById(message.getUserId()).get();
@@ -66,12 +75,13 @@ public class MessageService {
             throw new UserNotFoundException("code: USER_NOT_FOUND");    // выдать ошибку о том что он не найден
         }
 
-        // устанавливаем дату в сообщении
+        // ------------------------------------------------ устанавливаем дату в сообщении
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // формат времени
         Calendar cal = Calendar.getInstance(); // вытащить дату из системы
         message.setSendTime(dateFormat.format(cal.getTime())); // отправить дату в переменую
 
-        if (message.getChatId()!=null){ // это приватная переписка?
+        // ------------------------------------------------ это приватная переписка?
+        if (message.getChatId()!=null){
             // параметры поиска
             ParticipantsEntity p = new ParticipantsEntity();
             p.setUserId(user.getUserId());
@@ -82,11 +92,9 @@ public class MessageService {
             }
         }
 
-        if(message.getLifetimeSec()>0){ // время жизни есть?
-            //Long timel = message.getLifetimeSec()+message.getDelaySec(); // вытащить из сообщения
-            //Long timed = message.getDelaySec();
-            timeLife.set(message); //Передали сообщение потоку
-            System.out.println(11111);
+        // ------------------------------------------------ время жизни есть?
+        if((message.getLifetimeSec()>0)||(message.getDelaySec()>0)){
+            timeLife.set(message); //Передали сообщение потоку, он знает что делать
             return message;
         }
         else {
@@ -94,40 +102,7 @@ public class MessageService {
         }
     }
 
-    @Scheduled(fixedRate = 1000)
-    public void run() {
-        if (arrayListMessage!=null) {
-            ArrayList<MessageEntity> newArrayListMessage = new ArrayList<>();
-            for(MessageEntity m:arrayListMessage){
-
-                if(m.getDelaySec()>=0){
-                    m.setDelaySec(m.getDelaySec()-1);
-
-                    if (m.getDelaySec()==-1){
-                        m.setMessageId((messageCRUD.save(m)).getMessageId());
-                    }
-                }
-                else {
-                    if(m.getLifetimeSec()>0){
-                        m.setDelaySec(m.getLifetimeSec()-1);
-
-                        if (m.getDelaySec()==0){
-                            messageCRUD.deleteById(m.getMessageId());
-                        }
-                    }else {
-                        m=null;
-                    }
-                }
-                if (m!=null) {
-                    newArrayListMessage.add(m);
-                }
-            }
-            arrayListMessage = newArrayListMessage;
-        }
-    }
-
-
-    // ---------------------------------------------------------------------------- получить список всех сообщений из бд, которые для всех
+    // ---------------------------------------------------------------------------- получить список всех сообщений из бд, которые для всех ------------------------------------------------
     public ArrayList<MessageModel> getAllMessage(Long chatId) throws Exception{
         ArrayList<MessageModel> arrayListMessage = new ArrayList<>();
         for(MessageEntity m:messageCRUD.findAll()){
@@ -137,7 +112,7 @@ public class MessageService {
         return SortMessageTime.sort(arrayListMessage);
     }
 
-    // ---------------------------------------------------------------------------------------------------- Удалить сообщение
+    // ---------------------------------------------------------------------------------------------------- Удалить сообщение ------------------------------------------------
     public Long deleteOneMessage(Long id) throws UserNotFoundException {
         if (messageCRUD.findById(id).get()==null){
             throw new UserNotFoundException("code: USER_NOT_FOUND}");
@@ -148,43 +123,3 @@ public class MessageService {
 
 }
 
-/*
-@Component
-@EnableScheduling
-@EnableAsync
-class myTimeMessage{
-    private Long timeLife=0L;
-    private Long timeDelay=0L;
-    private MessageEntity message=null;
-
-    @Autowired
-    private MessageCRUD messageCRUD; // создаём интерфейс для взаимодействия с бд
-
-    public myTimeMessage() {
-    }
-
-    public void set(Long timeLife, Long timeDelay, MessageEntity message) {
-        this.timeLife=timeLife;
-        this.timeDelay=timeDelay;
-        this.message=message;
-    }
-
-    @Async
-    @Scheduled(initialDelay = 1000L)
-    public void start() {
-        try {
-            Thread.yield(); // даем возможность выбрать другой поток
-            TimeUnit.SECONDS.sleep(timeDelay); // отправляем спать этот поток, не объязательно, но помогает, лишний раз не ждать
-            message.setMessageId((messageCRUD.save(message)).getMessageId());
-            Thread.yield();
-            TimeUnit.SECONDS.sleep(timeLife-timeDelay);
-            System.out.println(timeLife-timeDelay);
-            messageCRUD.deleteById(message.getMessageId());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-}
-
- */

@@ -18,6 +18,9 @@ public class UserEntity { // ----------------------------------------------- н�
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private List<MessageEntity> participants;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private List<UnReadEntity> unread;
+
     public UserEntity(){ // конструктор
     }
 

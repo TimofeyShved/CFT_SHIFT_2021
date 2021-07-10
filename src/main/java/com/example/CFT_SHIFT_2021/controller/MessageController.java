@@ -1,11 +1,13 @@
 package com.example.CFT_SHIFT_2021.controller;
 
 import com.example.CFT_SHIFT_2021.entity.MessageEntity;
+import com.example.CFT_SHIFT_2021.entity.UnReadEntity;
 import com.example.CFT_SHIFT_2021.entity.UserEntity;
 import com.example.CFT_SHIFT_2021.exception.UserExistsException;
 import com.example.CFT_SHIFT_2021.exception.UserNotFoundException;
 import com.example.CFT_SHIFT_2021.repository.MessageCRUD;
 import com.example.CFT_SHIFT_2021.service.MessageService;
+import com.example.CFT_SHIFT_2021.service.UnReadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +25,15 @@ public class MessageController {
     @Autowired
     private MessageCRUD messageCRUD; // создаём интерфейс для взаимодействия с бд
 
-    @PostMapping("/message") // создать
+    @Autowired
+    private UnReadService unReadService;
+
+    @RequestMapping(value = "/message",method = RequestMethod.POST) // создать
     public ResponseEntity registration(@RequestBody MessageEntity message) throws Exception {
         try {
-            messageService.registration(message);
-            return ResponseEntity.ok(message);
+            MessageEntity NewMessage = messageService.registration(message);
+            unReadService.registration(NewMessage);
+            return ResponseEntity.ok(NewMessage);
         }catch (Exception e){
             return  ResponseEntity.badRequest().body("code: USER_NOT_FOUND_ERROR_MESSAGE");
         }

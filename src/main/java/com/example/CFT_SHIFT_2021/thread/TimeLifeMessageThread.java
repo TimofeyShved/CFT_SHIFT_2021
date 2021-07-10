@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Scope("prototype")
 public class TimeLifeMessageThread{
-    
+
     ArrayList<MessageEntity> arrayListMessage=new ArrayList<>();
 
     @Autowired
@@ -41,9 +41,9 @@ public class TimeLifeMessageThread{
                 }
                 else {
                     if(m.getLifetimeSec()>0){
-                        m.setDelaySec(m.getLifetimeSec()-1);
+                        m.setLifetimeSec(m.getLifetimeSec()-1);
 
-                        if (m.getDelaySec()==0){
+                        if (m.getLifetimeSec()==0){
                             messageCRUD.deleteById(m.getMessageId());
                         }
                     }else {
@@ -56,20 +56,5 @@ public class TimeLifeMessageThread{
             }
             arrayListMessage = newArrayListMessage;
         }
-        /*
-        try {
-            Thread.yield(); // даем возможность выбрать другой поток
-            TimeUnit.SECONDS.sleep(timeDelay); // отправляем спать этот поток, не объязательно, но помогает, лишний раз не ждать
-            message.setMessageId((messageCRUD.save(message)).getMessageId());
-            Thread.yield();
-            TimeUnit.SECONDS.sleep(timeLife-timeDelay);
-            System.out.println(timeLife-timeDelay);
-            messageCRUD.deleteById(message.getMessageId());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-         */
-
     }
 }
