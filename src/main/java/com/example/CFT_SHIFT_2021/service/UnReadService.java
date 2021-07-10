@@ -5,12 +5,17 @@ import com.example.CFT_SHIFT_2021.entity.ParticipantsEntity;
 import com.example.CFT_SHIFT_2021.entity.UnReadEntity;
 import com.example.CFT_SHIFT_2021.entity.UserEntity;
 import com.example.CFT_SHIFT_2021.exception.UserNotFoundException;
+import com.example.CFT_SHIFT_2021.model.MessageModel;
+import com.example.CFT_SHIFT_2021.repository.MessageCRUD;
 import com.example.CFT_SHIFT_2021.repository.ParticipantsCRUD;
 import com.example.CFT_SHIFT_2021.repository.UnReadCRUD;
 import com.example.CFT_SHIFT_2021.repository.UserCRUD;
+import com.example.CFT_SHIFT_2021.sorting.SortMessageTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 @Service
 @EnableScheduling
@@ -21,6 +26,9 @@ public class UnReadService {
 
     @Autowired
     private UserCRUD userCRUD;
+
+    @Autowired
+    private MessageCRUD messageCRUD;
 
     @Autowired
     private ParticipantsCRUD participantsCRUD;
@@ -57,5 +65,21 @@ public class UnReadService {
                 }
             }
         }
+    }
+
+
+    public ArrayList<MessageModel> getAllUnRead(Long userId, Long chatId) throws Exception{
+        ArrayList<MessageModel> arrayListMessage = new ArrayList<>();
+        for(UnReadEntity u:unReadCRUD.findAll()){
+            if ((u.getUserId()==userId)&&(((messageCRUD.findById(u.getMessageId())).get()).getChatId()==chatId)){
+                arrayListMessage.add(MessageModel.toMpdel((messageCRUD.findById(u.getMessageId())).get()));
+                deleteUnRead(u.getUnReadId());
+            }
+        }
+        return SortMessageTime.sort(arrayListMessage);
+    }
+
+    public void deleteUnRead(Long getUnReadId){
+        unReadCRUD.deleteById(getUnReadId);
     }
 }

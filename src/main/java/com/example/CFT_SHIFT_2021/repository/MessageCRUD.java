@@ -5,4 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface MessageCRUD extends CrudRepository<MessageEntity, Long> { // наследуемый интерфейс для изменения данных в бд
     MessageEntity findMessageEntityByText(String text);
+    MessageEntity findMessageEntityByChatId(Long chatID);
 }
