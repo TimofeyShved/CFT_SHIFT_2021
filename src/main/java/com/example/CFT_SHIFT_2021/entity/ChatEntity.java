@@ -11,6 +11,7 @@ public class ChatEntity {// ----------------------------------------------- на
     @GeneratedValue(strategy = GenerationType.IDENTITY) // автогенерация значений ключа
     private long chatId;
     private String name;
+    private String rssLink;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "chatId")
     private List<MessageEntity> message;
@@ -36,5 +37,13 @@ public class ChatEntity {// ----------------------------------------------- на
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getRssLink() {
+        return rssLink;
+    }
+
+    public void setRssLink(String rssLink) {
+        this.rssLink = rssLink;
     }
 }
