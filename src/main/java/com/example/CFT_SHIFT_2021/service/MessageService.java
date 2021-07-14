@@ -75,10 +75,12 @@ public class MessageService {
             throw new UserNotFoundException("code: USER_NOT_FOUND");    // выдать ошибку о том что он не найден
         }
 
-        // ------------------------------------------------ устанавливаем дату в сообщении
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // формат времени
-        Calendar cal = Calendar.getInstance(); // вытащить дату из системы
-        message.setSendTime(dateFormat.format(cal.getTime())); // отправить дату в переменую
+        if (message.getSendTime()==null) {
+            // ------------------------------------------------ устанавливаем дату в сообщении
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // формат времени
+            Calendar cal = Calendar.getInstance(); // вытащить дату из системы
+            message.setSendTime(dateFormat.format(cal.getTime())); // отправить дату в переменую
+        }
 
         // ------------------------------------------------ это приватная переписка?
         if (message.getChatId()!=null){
